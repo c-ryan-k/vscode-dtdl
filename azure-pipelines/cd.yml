@@ -79,8 +79,7 @@ stages:
       # modify application insights key for releases
       - script: |
           node scripts/modifyPackageJson.js aiKey $(aiKey)
-        displayName: Modify package.json for releases
-        condition: and(succeeded(), ${{ parameters.publishExt }})
+        displayName: 'Inject App Insights key'
 
       - template: common/package_steps.yml
         parameters:

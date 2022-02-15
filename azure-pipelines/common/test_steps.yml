@@ -1,7 +1,7 @@
 steps:
-  # testing
+  # Run tests
   - script: |
       npm run test --silent
-    displayName: Run Tests
+    displayName: 'Run Tests'
     env:
       DISPLAY: ':99.0'
