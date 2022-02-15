@@ -15,7 +15,6 @@ steps:
     displayName: 'Run PoliCheck'
     inputs:
       targetType: F
-    condition: eq(variables['Agent.OS'], 'Windows_NT')
 
   - task: PostAnalysis@1
     inputs:
