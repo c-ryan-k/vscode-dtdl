@@ -52,38 +52,17 @@ stages:
     steps:
       - template: common/setup_steps.yml
       - template: common/compile_steps.yml
-      - template: common/check_steps.yml
       - template: common/test_steps.yml
 
 - stage: build
   dependsOn: [test]
   jobs:
-  - job: CredScan
-    displayName: 'Credential Scan'
+  - job: SDLTools
+    displayName: 'SDL checks'
     pool:
       vmImage: windows-latest
     steps:
-    - task: CredScan@3
-      inputs:
-        outputFormat: 'pre'
-        scanFolder: '$(Build.SourcesDirectory)'
-
-    - task: PostAnalysis@1
-      inputs:
-        AllTools: false
-        APIScan: false
-        BinSkim: false
-        CodesignValidation: false
-        CredScan: true
-        FortifySCA: false
-        FxCop: false
-        ModernCop: false
-        PoliCheck: false
-        RoslynAnalyzers: false
-        SDLNativeRules: false
-        Semmle: false
-        TSLint: false
-        ToolLogsNotFoundAction: 'Standard'
+    - template: common/sdl_steps.yml
 
   - job: build_and_package
     displayName: 'Build and Publish Artifacts'
@@ -92,12 +71,10 @@ stages:
       vmImage: $(vmImage)
       demands:
         - ImageOverride -equals $(vmImage)
-    dependsOn: CredScan
+    dependsOn: SDLTools
     steps:
       - template: common/setup_steps.yml
       - template: common/compile_steps.yml
-      - template: common/check_steps.yml
-      - template: common/test_steps.yml
 
       # modify application insights key for releases
       - script: |
