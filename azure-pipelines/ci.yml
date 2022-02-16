@@ -5,17 +5,39 @@ pr:
 - develop
 
 stages:
-- stage: SDL
+- stage: CredScan
   jobs:
-    - job: sdl_checks
-      displayName: 'SDL checks'
+    - job: run_credscan
+      displayName: 'Run CredScan'
       pool:
         vmImage: 'windows-latest'
       steps:
-        - template: common/sdl_steps.yml
+        # cred scan
+        - task: CredScan@3
+          displayName: 'Run CredScan'
+          inputs:
+            outputFormat: 'pre'
+            scanFolder: '$(Build.SourcesDirectory)'
+
+        - task: PostAnalysis@1
+          inputs:
+            AllTools: false
+            APIScan: false
+            BinSkim: false
+            CodesignValidation: false
+            CredScan: true
+            FortifySCA: false
+            FxCop: false
+            ModernCop: false
+            PoliCheck: false
+            RoslynAnalyzers: false
+            SDLNativeRules: false
+            Semmle: false
+            TSLint: false
+            ToolLogsNotFoundAction: 'Standard'
 
 - stage: test
-  dependsOn: ['SDL']
+  dependsOn: ['CredScan']
   jobs:
   - job: run_tests
     displayName: 'Run tests'
