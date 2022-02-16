@@ -4,21 +4,33 @@ pr:
 - main
 - develop
 
-strategy:
-  matrix:
-    linux:
-      imageName: 'ubuntu-latest'
-    mac:
-      imageName: 'macos-latest'
-    windows:
-      imageName: 'windows-latest'
+stages:
+- stage: SDL
+  jobs:
+    - job: sdl_checks
+      displayName: 'SDL checks'
+      pool:
+        vmImage: 'windows-latest'
+      steps:
+        - template: common/sdl_steps.yml
 
-pool:
-  vmImage: $(imageName)
+- stage: test
+  dependsOn: ['SDL']
+  jobs:
+  - job: run_tests
+    displayName: 'Run tests'
+    strategy:
+      matrix:
+        linux:
+          imageName: 'ubuntu-latest'
+        mac:
+          imageName: 'macos-latest'
+        windows:
+          imageName: 'windows-latest'
 
-steps:
-  - ${{ if eq(variables['Agent.OS'], 'Windows_NT') }}:
-    - template: common/sdl_steps.yml
-  - template: common/setup_steps.yml
-  - template: common/compile_steps.yml
-  - template: common/test_steps.yml
+    pool:
+      vmImage: $(imageName)
+    steps:
+      - template: common/setup_steps.yml
+      - template: common/compile_steps.yml
+      - template: common/test_steps.yml

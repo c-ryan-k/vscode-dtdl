@@ -10,9 +10,20 @@ trigger: none
 pr: none
 
 stages:
-- stage: test
+- stage: SDL
   jobs:
-  - job: test
+    - job: sdl_checks
+      displayName: 'SDL checks'
+      pool:
+        vmImage: 'windows-latest'
+      steps:
+        - template: common/sdl_steps.yml
+
+- stage: test
+  dependsOn: ['SDL']
+  jobs:
+  - job: run_tests
+    displayName: 'Run tests'
     strategy:
       matrix:
         linux:
@@ -24,8 +35,6 @@ stages:
     pool:
       vmImage: $(imageName)
     steps:
-      - ${{ if eq(variables['Agent.OS'], 'Windows_NT') }}:
-        - template: common/sdl_steps.yml
       - template: common/setup_steps.yml
       - template: common/compile_steps.yml
       - template: common/test_steps.yml
