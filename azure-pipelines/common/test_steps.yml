@@ -1,4 +1,8 @@
 steps:
+  # static checking
+  - script: |
+      npm run eslint
+    displayName: 'Run ESLint Checks'
   # Run tests
   - script: |
       npm run test --silent

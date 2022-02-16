@@ -1,8 +1,4 @@
 steps:
-  # static checking
-  - script: |
-      npm run eslint
-    displayName: 'Run ESLint Checks'
   # cred scan
   - task: CredScan@3
     displayName: 'Run CredScan'
